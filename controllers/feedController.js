@@ -5,6 +5,11 @@ const Feed = require("../models/feed");
 exports.getFeeds = (req, res, next) => {
   Feed.find()
     .then((feeds) => {
+      if (feeds.length < 1) {
+        const error = new Error("No feeds available.");
+        error.statusCode = 404;
+        throw error;
+      }
       res.status(200).json({
         message: "Successfully got feeds!",
         feeds: feeds,
