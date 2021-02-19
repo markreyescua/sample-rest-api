@@ -16,4 +16,6 @@ router.post(
   controller.postFeeds
 );
 
+router.get("/:id", controller.getFeed);
+
 module.exports = router;

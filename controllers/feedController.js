@@ -6,12 +6,37 @@ exports.getFeeds = (req, res, next) => {
   Feed.find()
     .then((feeds) => {
       res.status(200).json({
-        message: "Successfully get feeds!",
+        message: "Successfully got feeds!",
         feeds: feeds,
       });
     })
     .catch((error) => {
-      console.log(error);
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+exports.getFeed = (req, res, next) => {
+  const feedId = req.params.id;
+  Feed.findById(feedId)
+    .then((feed) => {
+      if (!feed) {
+        const error = new Error("No feed with matching id found.");
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: "Successfully got feed!",
+        feed: feed,
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
     });
 };
 
@@ -37,7 +62,7 @@ exports.postFeeds = (req, res, next) => {
     .save()
     .then(() => {
       res.status(201).json({
-        message: "Successfully post feeds!",
+        message: "Successfully posted feed!",
       });
     })
     .catch((error) => {
