@@ -1,3 +1,4 @@
+const path = require("path");
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
@@ -21,6 +22,8 @@ const feedRoutes = require("./routes/feedRoutes");
 app.use(cookieParser());
 app.use(express.urlencoded());
 app.use(bodyParser.json());
+app.use("/images", express.static(path.join(__dirname, "images")));
+
 app.use(
   session({
     secret: "THGdTHGd6eTVo6yTHGd6eTVo6y65Syt65Syt6eTVoTHGd6eTVo6y65Syt6y65Syt",
@@ -41,6 +44,15 @@ app.use((req, res, next) => {
 });
 
 app.use("/feeds", feedRoutes);
+
+// Error Handler
+app.use((error, req, res, next) => {
+  const status = error.statusCode;
+  const message = error.message;
+  res.status(status).json({
+    message: message,
+  });
+});
 
 mongoose.set("useUnifiedTopology", true);
 mongoose

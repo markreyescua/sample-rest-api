@@ -1,38 +1,49 @@
 const { validationResult } = require("express-validator");
 
+const Feed = require("../models/feed");
+
 exports.getFeeds = (req, res, next) => {
-  res.status(200).json({
-    message: "Successfully get feeds!",
-    feeds: [
-      {
-        _id: 1,
-        title: "Harry Potter",
-        content: "This is my favorite book!",
-        imageUrl:
-          "https://images-na.ssl-images-amazon.com/images/I/81iqZ2HHD-L.jpg",
-        creator: {
-          name: "Mark Edison Cua",
-        },
-        created_at: new Date().toISOString(),
-      },
-    ],
-  });
+  Feed.find()
+    .then((feeds) => {
+      res.status(200).json({
+        message: "Successfully get feeds!",
+        feeds: feeds,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 };
 
 exports.postFeeds = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res
-      .status(422)
-      .json({
-        message: "Validation failed, entered data is incorrect",
-        errors: errors.array(),
-      });
+    const error = new Error("Validation failed, entered data is incorrect.");
+    error.statusCode = 422;
+    throw error;
   }
   const title = req.body.title;
-  const message = req.body.message;
-  res.status(201).json({
-    message: "Successfully post feeds!",
-    feeds: [],
+  const content = req.body.content;
+  const post = new Feed({
+    title: title,
+    content: content,
+    imageUrl:
+      "https://images-na.ssl-images-amazon.com/images/I/81iqZ2HHD-L.jpg",
+    creator: {
+      name: "Mark Edison Cua",
+    },
   });
+  post
+    .save()
+    .then(() => {
+      res.status(201).json({
+        message: "Successfully post feeds!",
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
 };
