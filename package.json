@@ -6,11 +6,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon app.js",
-    "start-server": "node app.js"
+    "start-server": "node app.js",
+    "lint": "eslint -c ."
   },
   "author": "Mark Edison Cua",
   "license": "ISC",
   "devDependencies": {
+    "eslint": "^7.20.0",
+    "eslint-plugin-react": "^7.22.0",
     "nodemon": "^1.18.3"
   },
   "dependencies": {
@@ -21,6 +24,7 @@
     "express": "^4.16.3",
     "express-handlebars": "^3.0.0",
     "express-session": "^1.17.1",
+    "express-validator": "^6.9.2",
     "mongodb": "^3.1.6",
     "mongoose": "^5.2.17",
     "mysql2": "^1.6.1",
