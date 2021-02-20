@@ -82,3 +82,26 @@ exports.postFeeds = (req, res, next) => {
       next(error);
     });
 };
+
+exports.updateFeed = (req, res, next) => {
+  const feedId = req.params.id;
+  const title = req.body.title;
+  const content = req.body.content;
+  Feed.findById(feedId)
+    .then((feed) => {
+      feed.title = title;
+      feed.content = content;
+      return feed.save();
+    })
+    .then(() => {
+      res.status(201).json({
+        message: "Successfully updated feed!",
+      });
+    })
+    .catch((error) => {
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};

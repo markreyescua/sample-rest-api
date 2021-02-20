@@ -18,4 +18,6 @@ router.post(
 
 router.get("/:id", controller.getFeed);
 
+router.put("/:id", controller.updateFeed);
+
 module.exports = router;
