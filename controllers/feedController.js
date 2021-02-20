@@ -63,7 +63,7 @@ exports.postFeeds = (req, res, next) => {
   const post = new Feed({
     title: title,
     content: content,
-    imageUrl: imageUrl,
+    imageUrl: `http://localhost:3000/${imageUrl}`,
     creator: {
       name: "Mark Edison Cua",
     },
