@@ -52,13 +52,18 @@ exports.postFeeds = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  if (!req.file) {
+    const error = new Error("No image provided.");
+    error.statusCode = 422;
+    throw error;
+  }
   const title = req.body.title;
   const content = req.body.content;
+  const imageUrl = req.file.path;
   const post = new Feed({
     title: title,
     content: content,
-    imageUrl:
-      "https://images-na.ssl-images-amazon.com/images/I/81iqZ2HHD-L.jpg",
+    imageUrl: imageUrl,
     creator: {
       name: "Mark Edison Cua",
     },
