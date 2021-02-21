@@ -4,10 +4,10 @@ const { validationResult } = require("express-validator");
 const Feed = require("../models/feed");
 
 exports.getFeeds = (req, res, next) => {
-  let currentPage = req.query.page || 1;
-  let perPage = req.query.count || 2;
-  let totalPage = 0;
+  let currentPage = +req.query.page || 1;
+  let perPage = +req.query.count || 2;
   let nextPage = +currentPage + 1;
+  let totalPage = 0;
 
   Feed.find()
     .countDocuments()
