@@ -6,13 +6,11 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const multer = require("multer");
-
-const MONGODB_URI =
-  "mongodb+srv://markreyescua:THGd6eTVo6y65Syt@cluster0.fbwmq.mongodb.net/sample-rest-api?retryWrites=true&w=majority";
+const constants = require("./util/constants");
 
 const app = express();
 const store = new MongoDbStore({
-  uri: MONGODB_URI,
+  uri: constants.MONGODB_URI,
   collection: "sessions",
 });
 
@@ -85,7 +83,7 @@ app.use((error, req, res, next) => {
 
 mongoose.set("useUnifiedTopology", true);
 mongoose
-  .connect(MONGODB_URI)
+  .connect(constants.MONGODB_URI)
   .then(() => {
     console.log("Connected to our database!");
     app.listen(3000);

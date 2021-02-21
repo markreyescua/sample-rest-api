@@ -4,44 +4,44 @@ const { validationResult } = require("express-validator");
 const Feed = require("../models/feed");
 const User = require("../models/user");
 
-exports.getFeeds = (req, res, next) => {
+exports.getFeeds = async (req, res, next) => {
   let currentPage = +req.query.page || 1;
   let perPage = +req.query.count || 2;
-  let nextPage = +currentPage + 1;
+  let nextPage = +currentPage;
   let totalPage = 0;
 
-  Feed.find()
-    .countDocuments()
-    .then((count) => {
-      totalPage = Math.ceil(count / perPage);
-      if (totalPage <= currentPage) {
-        nextPage = currentPage;
-      }
-      return Feed.find()
-        .select("-_id -__v -updatedAt")
-        .skip((currentPage - 1) * perPage)
-        .limit(perPage);
-    })
-    .then((feeds) => {
-      if (feeds.length < 1) {
-        const error = new Error("No feeds available.");
-        error.statusCode = 404;
-        throw error;
-      }
-      res.status(200).json({
-        message: "Successfully got feeds!",
-        total_page: totalPage,
-        current_page: currentPage,
-        next_page: nextPage,
-        feeds: feeds,
-      });
-    })
-    .catch((error) => {
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      next(error);
+  try {
+    const count = await Feed.find().countDocuments();
+    totalPage = Math.ceil(count / perPage);
+    if (totalPage <= currentPage) {
+      nextPage = currentPage;
+    } else {
+      nextPage = currentPage + 1;
+    }
+
+    const feeds = await Feed.find()
+      .select("-_id -__v -updatedAt")
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+
+    if (feeds.length < 1) {
+      const error = new Error("No feeds available.");
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({
+      message: "Successfully got feeds!",
+      total_page: totalPage,
+      current_page: currentPage,
+      next_page: nextPage,
+      feeds: feeds,
     });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
 };
 
 exports.getFeed = (req, res, next) => {
