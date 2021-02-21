@@ -39,6 +39,7 @@ const fileFilter = (req, file, cb) => {
 
 // controllers
 const feedRoutes = require("./routes/feedRoutes");
+const authRoutes = require("./routes/authRoutes");
 
 // middlewares
 app.use(cookieParser());
@@ -68,14 +69,17 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/feeds", feedRoutes);
+app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 
 // Error Handler
 app.use((error, req, res, next) => {
   const status = error.statusCode;
   const message = error.message;
+  const data = error.data;
   res.status(status).json({
     message: message,
+    data: data,
   });
 });
 
