@@ -148,42 +148,34 @@ exports.updateFeed = async (req, res, next) => {
   }
 };
 
-exports.deleteFeed = (req, res, next) => {
+exports.deleteFeed = async (req, res, next) => {
   const feedId = req.params.id;
-  Feed.findById(feedId)
-    .then((feed) => {
-      if (!feed) {
-        const error = new Error("No feed with matching id found.");
-        error.statusCode = 404;
-        throw error;
-      }
-      if (feed.creator.toString() !== req.userId) {
-        const error = new Error("Not authorized.");
-        error.statusCode = 403;
-        throw error;
-      }
-      clearImage(feed.imageUrl);
-      return Feed.findByIdAndRemove(feedId);
-    })
-    .then(() => {
-      return User.findById(req.userId);
-    })
-    .then((user) => {
-      user.feeds.pull(feedId);
-      return user.save();
-    })
-    .then(() => {
-      res.status(200).json({
-        message: "Successfully deleted feed!",
-      });
-    })
-    .catch((error) => {
-      console.log(error);
-      if (!error.statusCode) {
-        error.statusCode = 500;
-      }
-      next(error);
+  try {
+    const feed = await Feed.findById(feedId);
+    if (!feed) {
+      const error = new Error("No feed with matching id found.");
+      error.statusCode = 404;
+      throw error;
+    }
+    if (feed.creator.toString() !== req.userId) {
+      const error = new Error("Not authorized.");
+      error.statusCode = 403;
+      throw error;
+    }
+    clearImage(feed.imageUrl);
+    await Feed.findByIdAndRemove(feedId);
+    const user = await User.findById(req.userId);
+    user.feeds.pull(feedId);
+    await user.save();
+    res.status(200).json({
+      message: "Successfully deleted feed!",
     });
+  } catch (error) {
+    if (!error.statusCode) {
+      error.statusCode = 500;
+    }
+    next(error);
+  }
 };
 
 const clearImage = (filePath) => {
