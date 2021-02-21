@@ -1,9 +1,11 @@
+const fs = require("fs");
+const path = require("path");
 const { validationResult } = require("express-validator");
-
 const Feed = require("../models/feed");
 
 exports.getFeeds = (req, res, next) => {
   Feed.find()
+    .select("-_id -__v -updatedAt")
     .then((feeds) => {
       if (feeds.length < 1) {
         const error = new Error("No feeds available.");
@@ -84,6 +86,13 @@ exports.postFeeds = (req, res, next) => {
 };
 
 exports.updateFeed = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error("Validation failed, entered data is incorrect.");
+    error.statusCode = 422;
+    throw error;
+  }
+
   const feedId = req.params.id;
   const title = req.body.title;
   const content = req.body.content;
@@ -104,4 +113,41 @@ exports.updateFeed = (req, res, next) => {
       }
       next(error);
     });
+};
+
+exports.deleteFeed = (req, res, next) => {
+  const feedId = req.params.id;
+  Feed.findById(feedId)
+    .then((feed) => {
+      if (!feed) {
+        const error = new Error("No feed with matching id found.");
+        error.statusCode = 404;
+        throw error;
+      }
+      clearImage(feed.imageUrl);
+      return Feed.findByIdAndRemove(feedId);
+    })
+    .then(() => {
+      res.status(200).json({
+        message: "Successfully deleted feed!",
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      if (!error.statusCode) {
+        error.statusCode = 500;
+      }
+      next(error);
+    });
+};
+
+const clearImage = (filePath) => {
+  filePath = path.join(
+    __dirname,
+    "..",
+    filePath.replace("http://localhost:3000/", "")
+  );
+  fs.unlink(filePath, (error) => {
+    console.log(error);
+  });
 };

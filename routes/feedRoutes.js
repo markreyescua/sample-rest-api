@@ -18,6 +18,15 @@ router.post(
 
 router.get("/:id", controller.getFeed);
 
-router.put("/:id", controller.updateFeed);
+router.put(
+  "/:id",
+  [
+    body("title").trim().isLength({ min: 5 }),
+    body("content").trim().isLength({ min: 5 }),
+  ],
+  controller.updateFeed
+);
+
+router.delete("/:id", controller.deleteFeed);
 
 module.exports = router;
