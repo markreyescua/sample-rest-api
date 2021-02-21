@@ -4,8 +4,23 @@ const { validationResult } = require("express-validator");
 const Feed = require("../models/feed");
 
 exports.getFeeds = (req, res, next) => {
+  let currentPage = req.query.page || 1;
+  let perPage = req.query.count || 2;
+  let totalPage = 0;
+  let nextPage = +currentPage + 1;
+
   Feed.find()
-    .select("-_id -__v -updatedAt")
+    .countDocuments()
+    .then((count) => {
+      totalPage = Math.ceil(count / perPage);
+      if (totalPage <= currentPage) {
+        nextPage = currentPage;
+      }
+      return Feed.find()
+        .select("-_id -__v -updatedAt")
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
     .then((feeds) => {
       if (feeds.length < 1) {
         const error = new Error("No feeds available.");
@@ -14,6 +29,9 @@ exports.getFeeds = (req, res, next) => {
       }
       res.status(200).json({
         message: "Successfully got feeds!",
+        total_page: totalPage,
+        current_page: currentPage,
+        next_page: nextPage,
         feeds: feeds,
       });
     })
