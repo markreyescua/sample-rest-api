@@ -2,6 +2,7 @@ const fs = require("fs");
 const path = require("path");
 const { validationResult } = require("express-validator");
 const Feed = require("../models/feed");
+const User = require("../models/user");
 
 exports.getFeeds = (req, res, next) => {
   let currentPage = +req.query.page || 1;
@@ -80,19 +81,31 @@ exports.postFeeds = (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
   const imageUrl = req.file.path;
+  let creator;
   const post = new Feed({
     title: title,
     content: content,
     imageUrl: `http://localhost:3000/${imageUrl}`,
-    creator: {
-      name: "Mark Edison Cua",
-    },
+    creator: req.userId,
   });
   post
     .save()
     .then(() => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      creator = user;
+      user.feeds.push(post);
+      return user.save();
+    })
+    .then(() => {
       res.status(201).json({
         message: "Successfully posted feed!",
+        feed: post,
+        creator: {
+          _id: creator._id,
+          name: creator.name,
+        },
       });
     })
     .catch((error) => {
@@ -116,6 +129,16 @@ exports.updateFeed = (req, res, next) => {
   const content = req.body.content;
   Feed.findById(feedId)
     .then((feed) => {
+      if (!feed) {
+        const error = new Error("Could not find feed.");
+        error.statusCode = 404;
+        throw error;
+      }
+      if (feed.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized.");
+        error.statusCode = 403;
+        throw error;
+      }
       feed.title = title;
       feed.content = content;
       return feed.save();
@@ -142,8 +165,20 @@ exports.deleteFeed = (req, res, next) => {
         error.statusCode = 404;
         throw error;
       }
+      if (feed.creator.toString() !== req.userId) {
+        const error = new Error("Not authorized.");
+        error.statusCode = 403;
+        throw error;
+      }
       clearImage(feed.imageUrl);
       return Feed.findByIdAndRemove(feedId);
+    })
+    .then(() => {
+      return User.findById(req.userId);
+    })
+    .then((user) => {
+      user.feeds.pull(feedId);
+      return user.save();
     })
     .then(() => {
       res.status(200).json({
