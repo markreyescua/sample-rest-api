@@ -14,11 +14,7 @@ exports.getFeeds = async (req, res, next) => {
   try {
     const count = await Feed.find().countDocuments();
     totalPage = Math.ceil(count / perPage);
-    if (totalPage <= currentPage) {
-      nextPage = currentPage;
-    } else {
-      nextPage = currentPage + 1;
-    }
+    nextPage = totalPage <= currentPage ? currentPage : currentPage + 1;
 
     const feeds = await Feed.find()
       .select("-_id -__v -updatedAt")
