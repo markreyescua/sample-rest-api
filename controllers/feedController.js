@@ -21,6 +21,7 @@ exports.getFeeds = async (req, res, next) => {
 
     const feeds = await Feed.find()
       .select("-_id -__v -updatedAt")
+      .populate("creator", "_id name email")
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
