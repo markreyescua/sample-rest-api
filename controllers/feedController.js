@@ -3,6 +3,7 @@ const path = require("path");
 const { validationResult } = require("express-validator");
 const Feed = require("../models/feed");
 const User = require("../models/user");
+const io = require("../appSocket");
 
 exports.getFeeds = async (req, res, next) => {
   let currentPage = +req.query.page || 1;
@@ -95,6 +96,12 @@ exports.postFeeds = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.feeds.push(post);
     await user.save();
+
+    io.getIO().emit("feed", {
+      action: "create-feed",
+      feed: post,
+    });
+
     res.status(201).json({
       message: "Successfully posted feed!",
       feed: post,

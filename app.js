@@ -38,6 +38,7 @@ const fileFilter = (req, file, cb) => {
 // controllers
 const feedRoutes = require("./routes/feedRoutes");
 const authRoutes = require("./routes/authRoutes");
+const { init } = require("./models/feed");
 
 // middlewares
 app.use(cookieParser());
@@ -85,8 +86,12 @@ mongoose.set("useUnifiedTopology", true);
 mongoose
   .connect(constants.MONGODB_URI)
   .then(() => {
-    console.log("Connected to our database!");
-    app.listen(3000);
+    console.log("Connected to then server");
+    const server = app.listen(8080);
+    const io = require("./appSocket").init(server);
+    io.on("connection", (socket) => {
+      console.log(`connected: ${socket}`);
+    });
   })
   .catch((err) => {
     console.log(err);
