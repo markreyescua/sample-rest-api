@@ -91,7 +91,7 @@ app.use((error, req, res, next) => {
 mongoose.set("useUnifiedTopology", true);
 console.log(constants.MONGODB_URI);
 mongoose
-  .connect(constants.MONGODB_URI || 3000)
+  .connect(constants.MONGODB_URI)
   .then(() => {
     console.log("Connected to then server");
     const server = app.listen(constants.SERVER_PORT);
