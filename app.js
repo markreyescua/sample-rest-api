@@ -51,7 +51,7 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use(
   session({
-    secret: "THGdTHGd6eTVo6yTHGd6eTVo6y65Syt65Syt6eTVoTHGd6eTVo6y65Syt6y65Syt",
+    secret: constants.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
     store: store,
@@ -84,10 +84,10 @@ app.use((error, req, res, next) => {
 
 mongoose.set("useUnifiedTopology", true);
 mongoose
-  .connect(constants.MONGODB_URI)
+  .connect(constants.MONGODB_URI || 8080)
   .then(() => {
     console.log("Connected to then server");
-    const server = app.listen(8080);
+    const server = app.listen(constants.SERVER_PORT);
     const io = require("./appSocket").init(server);
     io.on("connection", (socket) => {
       console.log(`connected: ${socket}`);

@@ -5,13 +5,16 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js",
+    "start": "node app.js",
     "start-server": "node app.js",
+    "start:dev": "env-cmd -f .env nodemon app.js",
+    "start:prod": "env-cmd -f .env.prod nodemon app.js",
     "lint": "eslint -c ."
   },
   "author": "Mark Edison Cua",
   "license": "ISC",
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "eslint": "^7.20.0",
     "eslint-plugin-react": "^7.22.0",
     "nodemon": "^1.18.3"

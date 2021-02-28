@@ -65,7 +65,7 @@ exports.login = (req, res, next) => {
           email: loadedUser.email,
           userId: loadedUser._id.toString(),
         },
-        constants.SECRET_KEY,
+        constants.JWT_SECRET_KEY,
         {
           expiresIn: "1h",
         }

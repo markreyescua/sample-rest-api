@@ -1,5 +1,4 @@
 node_modules
 images
 .env
-.env.development
-.env.production
+.env.prod
