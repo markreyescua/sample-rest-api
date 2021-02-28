@@ -7,6 +7,7 @@ const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const multer = require("multer");
 const helmet = require("helmet");
+const compression = require("compression");
 const constants = require("./util/constants");
 
 const app = express();
@@ -74,6 +75,7 @@ app.use("/feed", feedRoutes);
 app.use("/auth", authRoutes);
 
 app.use(helmet());
+app.use(compression());
 
 // Error Handler
 app.use((error, req, res, next) => {
