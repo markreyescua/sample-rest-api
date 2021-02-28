@@ -5,7 +5,7 @@ const controller = require("../controllers/feedController");
 const isAuth = require("../middleware/is-auth");
 
 // GET - /feeds
-router.get("/", isAuth, controller.getFeeds);
+router.get("/", controller.getFeeds);
 
 // POST - /feeds
 router.post(

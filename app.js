@@ -6,9 +6,11 @@ const mongoose = require("mongoose");
 const session = require("express-session");
 const MongoDbStore = require("connect-mongodb-session")(session);
 const multer = require("multer");
+const helmet = require("helmet");
 const constants = require("./util/constants");
 
 const app = express();
+
 const store = new MongoDbStore({
   uri: constants.MONGODB_URI,
   collection: "sessions",
@@ -70,6 +72,8 @@ app.use((req, res, next) => {
 
 app.use("/feed", feedRoutes);
 app.use("/auth", authRoutes);
+
+app.use(helmet());
 
 // Error Handler
 app.use((error, req, res, next) => {
