@@ -76,6 +76,7 @@ app.use("/auth", authRoutes);
 
 app.use(helmet());
 app.use(compression());
+app.use(morgan("combined"));
 
 // Error Handler
 app.use((error, req, res, next) => {
