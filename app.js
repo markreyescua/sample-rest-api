@@ -73,7 +73,7 @@ app.use((req, res, next) => {
 app.use("/feed", feedRoutes);
 app.use("/auth", authRoutes);
 
-app.use(helmet());
+// app.use(helmet());
 app.use(compression());
 
 // Error Handler
