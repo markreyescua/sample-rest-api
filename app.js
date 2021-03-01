@@ -41,7 +41,6 @@ const fileFilter = (req, file, cb) => {
 // controllers
 const feedRoutes = require("./routes/feedRoutes");
 const authRoutes = require("./routes/authRoutes");
-const { init } = require("./models/feed");
 
 // middlewares
 app.use(cookieParser());
