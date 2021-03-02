@@ -2,12 +2,12 @@
   "name": "sample-rest-api",
   "version": "1.0.0",
   "description": "",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "env-cmd -f .env node server.js",
-    "start:dev": "env-cmd -f .env.dev nodemon server.js",
-    "start:prod": "env-cmd -f .env.prod nodemon server.js",
+    "start": "env-cmd -f .env node app.js",
+    "start:dev": "env-cmd -f .env.dev nodemon app.js",
+    "start:prod": "env-cmd -f .env.prod nodemon app.js",
     "lint": "eslint -c ."
   },
   "author": "Mark Edison Cua",
